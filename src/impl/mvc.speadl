@@ -1,0 +1,41 @@
+import interfaces.IEvent
+import interfaces.IRead
+import interfaces.IUpdate
+import interfaces.IUser
+import interfaces.IWrite
+
+namespace impl {
+	component Model {
+		provides update: IUpdate
+		provides read: IRead
+	}
+	
+	component View {
+		requires read: IRead
+		requires write: IWrite
+		provides event: IEvent
+		provides user: IUser
+	}
+	
+	component Controller {
+		provides write: IWrite
+		requires update: IUpdate
+		requires event: IEvent
+	}
+	
+	component Root {
+		part model:Model
+		
+		part view:View {
+			bind read to model.read
+			bind write to controller.write
+		}
+		
+		part controller:Controller {
+			bind event to view.event
+			bind update to model.update
+		}
+		provides user: IUser = view.user
+	}
+	
+}
